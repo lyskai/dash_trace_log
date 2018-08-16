@@ -74,10 +74,20 @@ def update_figure(rows, selected_row_indices):
     #        elif item['process'].find('iperf-8259') != -1
     #            index = rows.index(item)
     #            marker['color'][index] = '#33851B'
+
+    #print "=== dff start"
+    #print dff
+    #print "=== end"
+    #print "=== start"
+    #print dff['time']
+    #print "=== end"
+    #print "=== start 1"
+    #print dff['time'][1]
+    #print "=== end"
     fig.append_trace({
         'x' : dff['time'],
-        'y' : dff['process'],
-        'type' : 'histogram',
+        'y' : [10]*len(dff),
+        'type' : 'bar',
         'marker': marker
     }, 1, 1)
 #    fig.append_trace({
