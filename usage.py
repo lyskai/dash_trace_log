@@ -7,6 +7,7 @@ import json
 import pandas as pd
 import numpy as np
 import plotly
+import time
 
 app = dash.Dash()
 
@@ -52,32 +53,42 @@ def update_selected_row_indices(clickData, selected_row_indices):
     [Input('datatable-gapminder', 'rows'),
      Input('datatable-gapminder', 'selected_row_indices')])
 def update_figure(rows, selected_row_indices):
-    #print "===> start"
+    print "===> start" , time.time()
     dff = pd.DataFrame(rows)
     #print rows
     #print dff
     #print "=== "
     fig = plotly.tools.make_subplots(
-        rows=1, cols=1
-        )
+        rows=3, cols=1,
+        subplot_titles=('AR6K', 'iperf', 'irq',),
+        shared_xaxes=True)
     marker = {'color':['#0074D9']*len(dff)}
     for i in (selected_row_indices or []):
         marker['color'][i] = '#FF851B'
-    #for item in rows
+    #for item in rows:
         #print "======>"
         #print item
         #print item['process']
-    #    if item
-    #        if item['process'].find('AR6K-8139') != -1
-    #            index = rows.index(item)
-    #            marker['color'][index] = '#FF851B'
-    #        elif item['process'].find('iperf-8259') != -1
-    #            index = rows.index(item)
-    #            marker['color'][index] = '#33851B'
+     #   if item:
+     #       if item['process'].find('AR6K-8139') != -1:
+     #           index = rows.index(item)
+     #           marker['color'][index] = '#FF851B'
+     #           AR6K.append(item)
+     #       elif item['process'].find('iperf-8259') != -1:
+     #           index = rows.index(item)
+     #           marker['color'][index] = '#33851B'
+     #           iperf.append(item)
+     #       else:
+     #           irq.append(item)
 
     #print "=== dff start"
     #print dff
-    #print "=== end"
+    #print "=== AR6K-8139"
+    #print dff['process'].values
+    # fixme: need use a proper way to find out process
+    AR6K2=dff.loc[dff['process'].values == '            AR6K-8139  ']
+    iperf2=dff.loc[dff['process'].values == '           iperf-8259  ']
+    irq2=dff.loc[dff['process'].values == '     irq/45-mmc0-140   ']
     #print "=== start"
     #print dff['time']
     #print "=== end"
@@ -85,34 +96,35 @@ def update_figure(rows, selected_row_indices):
     #print dff['time'][1]
     #print "=== end"
     fig.append_trace({
-        'x' : dff['time'],
-        'y' : [10]*len(dff),
-        'type' : 'bar',
-        'marker': marker
+        'x': AR6K2['time'],
+        'y': [10]*len(AR6K2),
+        'type': 'bar'
+#        'marker': marker
     }, 1, 1)
-#    fig.append_trace({
-#        'x' dff['time'],
-#        'y' dff['process'],
-#        'type' 'bar',
-#        'marker' marker
-#    }, 2, 1)
-#    fig.append_trace({
-#        'x' dff['process'],
-#        'y' dff['cpu'],
-#        'type' 'bar',
-#        'marker' marker
-#    }, 3, 1)
-#    fig['layout']['showlegend'] = False
-#    fig['layout']['height'] = 800
-#    fig['layout']['margin'] = {
-#        'l' 40,
-#        'r' 10,
-#        't' 60,
-#        'b' 200
-#    }
-#    fig['layout']['yaxis3']['type'] = 'log'
-    fig['layout'].update(height=300, width=1600, title='ele')
+    fig.append_trace({
+        'x': iperf2['time'],
+        'y': [10]*len(iperf2),
+        'type': 'bar'
+#        'marker': marker
+    }, 2, 1)
+    fig.append_trace({
+        'x': irq2['time'],
+        'y': [10]*len(irq2),
+        'type': 'bar'
+ #       'marker': marker
+    }, 3, 1)
+    fig['layout']['showlegend'] = False
+    fig['layout']['height'] = 800
+    fig['layout']['margin'] = {
+            'l':40,
+            'r':10,
+            't':60,
+            'b':200
+    }
+    #fig['layout']['yaxis3']['type'] = 'log'
+#    fig['layout'].update(height=300, width=1600, title='ele')
+    print "===> end" , time.time()
     return fig
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host="10.231.194.176")
+    app.run_server( host="10.231.194.176")
